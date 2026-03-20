@@ -31,19 +31,19 @@ body{font-family:-apple-system,sans-serif;background:var(--bg);color:var(--tp);m
 
 .section-divider{padding:18px 24px 6px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ts);}
 
-/* COLLECTION PANEL — same layer pattern as #tool */
-#coll-panel{position:fixed;inset:0;max-width:720px;margin:0 auto;background:var(--bg);z-index:200;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);overflow-y:auto;display:block;}
-#coll-panel.open{transform:translateX(0);}
-.coll-header{padding:52px 24px 14px;border-bottom:1px solid var(--br);position:sticky;top:0;z-index:100;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:rgba(250,249,247,.93);display:flex;align-items:center;gap:12px;}
+/* COLLECTION PANEL — mirrors #tool and #debate exactly */
+#coll-panel{display:none;min-height:100vh;}
+#coll-panel.open{display:block;}
+.coll-header{padding:13px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--br);position:sticky;top:0;background:rgba(250,249,247,.96);backdrop-filter:blur(20px);z-index:10;}
 .coll-back{background:none;border:none;font-size:17px;color:var(--ac);cursor:pointer;padding:4px 0;font-weight:500;}
 .coll-title{font-size:20px;font-weight:700;flex:1;}
 .coll-count{font-size:13px;color:var(--ts);}
 .coll-tag{font-size:10px;font-weight:600;background:var(--as);color:var(--ac);border-radius:8px;padding:1px 7px;}
 
-/* COLLECTION ITEM VIEWER — deepest layer */
-#coll-item{position:fixed;inset:0;max-width:720px;margin:0 auto;background:var(--bg);z-index:300;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);overflow-y:auto;display:block;}
-#coll-item.open{transform:translateX(0);}
-.ci-header{padding:52px 24px 14px;border-bottom:1px solid var(--br);position:sticky;top:0;z-index:100;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:rgba(250,249,247,.93);display:flex;align-items:center;gap:12px;}
+/* COLLECTION ITEM VIEWER */
+#coll-item{display:none;min-height:100vh;}
+#coll-item.open{display:block;}
+.ci-header{padding:13px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--br);position:sticky;top:0;background:rgba(250,249,247,.96);backdrop-filter:blur(20px);z-index:10;}
 .ci-back{background:none;border:none;font-size:17px;color:var(--ac);cursor:pointer;padding:4px 0;font-weight:500;}
 .ci-title{font-size:17px;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 #ci-body{padding:0 0 80px;}
@@ -2686,30 +2686,28 @@ const COLLECTION_DATA = {
 };
 
 function openCollection(){
+  document.getElementById('list').style.display='none';
   document.getElementById('coll-panel').classList.add('open');
 }
 function closeCollection(){
-  document.getElementById('coll-panel').classList.remove('open');
-  // also close any open item
   document.getElementById('coll-item').classList.remove('open');
   document.getElementById('ci-body').innerHTML='';
+  document.getElementById('coll-panel').classList.remove('open');
+  document.getElementById('list').style.display='block';
 }
 function openCollItem(id){
   var item=COLLECTION_DATA[id];
   if(!item)return;
   document.getElementById('ci-title').textContent=item.title;
   var body=document.getElementById('ci-body');
-  // Inject scoped style + content
   body.innerHTML='<style>'+item.css+'</style>'+item.html;
-  // Run the item's script in a safe eval scope
   if(item.js){try{(new Function(item.js))();}catch(e){console.warn('Collection item script:',e);}}
   document.getElementById('coll-item').classList.add('open');
   document.getElementById('coll-item').scrollTop=0;
 }
 function closeCollItem(){
   document.getElementById('coll-item').classList.remove('open');
-  // Small delay so slide-out animation completes before clearing
-  setTimeout(function(){document.getElementById('ci-body').innerHTML='';},300);
+  setTimeout(function(){document.getElementById('ci-body').innerHTML='';},50);
 }
 
 function initCollection(){
@@ -2805,34 +2803,7 @@ function initCollection(){
   </div>
 </div>
 
-    <div class="coll-count">2 items</div>
-  </div>
-  <div style="padding:6px 0">
-    <button class="note-row" onclick="openCollItem('cms')">
-      <div class="note-icon">🎯</div>
-      <div class="note-preview">
-        <div class="note-title">Count-Min Sketch</div>
-        <div class="note-snippet">Visual guide — hash tables, frequency estimation, interview Q&A</div>
-      </div>
-      <div class="note-date" style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
-        <span style="font-size:10px;font-weight:600;background:var(--as);color:var(--ac);border-radius:8px;padding:1px 7px;">Algorithm</span>
-        <span style="font-size:11px;color:var(--ts);">Manish</span>
-      </div>
-    </button>
-    <button class="note-row" onclick="openCollItem('topk')">
-      <div class="note-icon">🏗️</div>
-      <div class="note-preview">
-        <div class="note-title">Top-K End-to-End Design</div>
-        <div class="note-snippet">Kafka · Flink · Redis · Cassandra · ClickHouse · S3 full blueprint</div>
-      </div>
-      <div class="note-date" style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
-        <span style="font-size:10px;font-weight:600;background:var(--as);color:var(--ac);border-radius:8px;padding:1px 7px;">System Design</span>
-        <span style="font-size:11px;color:var(--ts);">Manish</span>
-      </div>
-    </button>
-  </div>
-</div>
-  </div></div>
+
 
 <!-- MY COLLECTION — list panel -->
 <div id="coll-panel">
